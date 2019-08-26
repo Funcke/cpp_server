@@ -5,6 +5,11 @@
 #include <thread>
 #include <stdbool.h>
 
+class Job {
+public:
+    virtual void run();
+};
+
 class Threadpool {
 public:
     // properties
@@ -13,7 +18,7 @@ public:
     std::vector<Job*> job_queue;
     unsigned int size;
     std::vector<std::thread> pool;
-    int terminated = false;
+    int terminated;
 
     Threadpool(int size);
     // public methods
@@ -21,10 +26,5 @@ public:
 
 private:
     void worker_loop();
-};
-
-class Job {
-public:
-    virtual void run();
 };
 #endif

@@ -11,6 +11,7 @@
 Server::Server(int port, std::string host) {
     this->port = port;
     this->host = host;
+    this->threadpool = new Threadpool(120);
 }
 
 void Server::start() {
@@ -43,21 +44,6 @@ void Server::start_lifecycle() {
             this->abort(-3, &std::string("Client could not connect\n"));
         }
         
-        //this->threadpool
-        char buffer[10000];
-        int read_data_size;
-
-        read_data_size = read (connection, buffer, 10000);
-        if (read_data_size < 0)
-        {
-            this->abort(-4, &std::string("Error getting data from client\n"));
-        }
-        else if (read_data_size == 0)
-            close(connection);
-        else
-        {
-            /* Data read. */
-            fprintf (stderr, "Server: got message: `%s'\n", buffer);
-        }
+        this->threadpool->add_job((Job *)&HttpRequestLifecycle(connection));
     }
 }

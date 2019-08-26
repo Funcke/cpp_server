@@ -2,8 +2,9 @@
 
 Threadpool::Threadpool(int size) {
     this->size = size;
+    this->terminated = false;
     for(int i = 0; i < size; i++) {
-        this->pool.push_back(std::thread(this->worker_loop));
+        this->pool.push_back(std::thread(&(this->worker_loop)));
     }
 }
 

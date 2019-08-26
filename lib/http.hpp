@@ -15,7 +15,7 @@ class Server {
 public: 
     int port;
     std::string host;
-    Threadpool threadpool{120};
+    Threadpool* threadpool;
     int network_socket;
     sockaddr_in network_access;
     std::thread* next_socket;
@@ -29,13 +29,32 @@ private:
     void start_lifecycle();
 };
 
+class Request {
+public:
+    std::map<std::string, std::string> headers;
+    void add_header_from_string(std::string* raw_header);
+    void add_header(std::string* key, std::string* value);
+};
 
-class RequestHandler: public Job {
+class HttpRequestLifecycle: Job {
+public:
+    HttpRequestLifecycle(int socket);
+    void run();
+private:
+    Request request;
+    int socket;
+    //Response response;
+};
+
+class RequestHandler {
+public:
     RequestHandler(Request* request);
     void run();
 
 private:
     Request* request;
-    std::map<std::string, std::function<void(Request* req)>> handler_map;
+    std::map<std::string, std::function<void(Request*)>> handler_map;
 };
+
+
 #endif
