@@ -4,26 +4,29 @@ Threadpool::Threadpool(int size) {
     this->size = size;
     this->terminated = false;
     for(int i = 0; i < size; i++) {
-        this->pool.push_back(std::thread(&(this->worker_loop)));
+        this->pool.push_back(std::thread(&Threadpool::worker_loop, this));
     }
 }
 
 void Threadpool::add_job(Job* j) {
-    {
-        std::unique_lock<std::mutex> lock(this->job_mutex);
-        this->job_queue.push_back(j);
-    }
-    this->condition.notify_one();
+    std::unique_lock<std::mutex> lock(this->job_mutex);
+    this->job_queue.push(j);
+    printf("Job added\n");
+    lock.unlock();
+    this->condition.notify_all();
 }
 
 void Threadpool::worker_loop() {
     while(1) {
-        Job j;
         {
+            Job* j;
             std::unique_lock<std::mutex> lock(this->job_mutex);
-            std::condition_variable().wait(lock, [&]{return !this->job_queue.empty() || terminated;});
-            j = *this->job_queue.front();
+            this->condition.wait(lock, [this]{ return (this->job_queue.size() != 0 || this->terminated);});
+            j = std::move(this->job_queue.front());
+            this->job_queue.pop();
+            printf("Job read\n");
+            lock.unlock();
+            j->run();
         }
-        j.run();
     }
 }

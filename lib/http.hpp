@@ -8,6 +8,7 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <netinet/in.h>
+#include <functional>
 
 #include "threadpool.hpp"
 
@@ -25,7 +26,7 @@ public:
     void stop();
 private:
     void connect_to_network();
-    void abort(int code, std::string* message);
+    void abort(int code, std::string message);
     void start_lifecycle();
 };
 
@@ -36,13 +37,14 @@ public:
     void add_header(std::string* key, std::string* value);
 };
 
-class HttpRequestLifecycle: Job {
+class HttpRequestLifecycle: public Job {
 public:
     HttpRequestLifecycle(int socket);
     void run();
 private:
     Request request;
     int socket;
+    std::string* read_line();
     //Response response;
 };
 

@@ -3,11 +3,12 @@
 
 #include <vector>
 #include <thread>
+#include <queue>
 #include <stdbool.h>
 
 class Job {
 public:
-    virtual void run();
+    virtual void run() = 0;
 };
 
 class Threadpool {
@@ -15,7 +16,7 @@ public:
     // properties
     std::mutex job_mutex;
     std::condition_variable condition;
-    std::vector<Job*> job_queue;
+    std::queue<Job*> job_queue;
     unsigned int size;
     std::vector<std::thread> pool;
     int terminated;
