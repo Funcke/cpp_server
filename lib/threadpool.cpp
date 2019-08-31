@@ -8,6 +8,15 @@ Threadpool::Threadpool(int size) {
     }
 }
 
+Threadpool::~Threadpool() {
+    delete(&(this->job_mutex));
+    delete(&(this->condition));
+    delete(&(this->job_queue));
+    delete(&(this->size));
+    delete(&(this->pool));
+    delete(&(this->terminated));
+}
+
 void Threadpool::add_job(Job* j) {
     std::unique_lock<std::mutex> lock(this->job_mutex);
     this->job_queue.push(j);

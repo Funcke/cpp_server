@@ -19,9 +19,10 @@ public:
     std::queue<Job*> job_queue;
     unsigned int size;
     std::vector<std::thread> pool;
-    int terminated;
+    bool terminated;
 
     Threadpool(int size);
+    ~Threadpool();
     // public methods
     void add_job(Job* j);
 
