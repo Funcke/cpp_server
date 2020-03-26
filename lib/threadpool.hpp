@@ -5,6 +5,8 @@
 #include <thread>
 #include <queue>
 #include <stdbool.h>
+#include <mutex>
+#include <condition_variable>
 
 class Job {
 public:

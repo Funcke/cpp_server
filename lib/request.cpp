@@ -3,6 +3,7 @@
 #include <iostream>
 #include <sstream>
 #include <vector>
+#include <iterator>
 #include <unistd.h>
 
 namespace http {
